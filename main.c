@@ -44,6 +44,9 @@ Status InOrderTraverse(BiTree T);                   //递归中序遍历二叉树
 int TreeDeep(BiTree T);                             //非递归求二叉树的深度
 int RETreeDeep(BiTree T);                           //递归求二叉树的深度
 int LeafCount(BiTree T);                            //二叉树的叶子节点个数
+Status NoRePreOrderTraverse(BiTree T);              //非递归先序遍历二叉树
+Status NoRePostOrderTraverse(BiTree T);             //非递归后序遍历二叉树
+
 
 Status InitStack(sqStack *S);                       //初始化栈
 Status Push(sqStack *S, BiTree e);                  //压栈
@@ -203,6 +206,29 @@ Status PreOrderTraverse(BiTree T, int level){
     }
     return OK;
 }
+
+//非递归先序遍历二叉树
+Status NoRePreOrderTraverse(BiTree T){
+
+    BiTree p;
+    sqStack S;
+    InitStack(&S);
+    p = T;
+    while(p != NULL || StackEmpty(S) == 1){
+        while(p != NULL){
+            print(p->data);
+            Push(&S, p);
+            p = p->lchild;
+        }
+        if(StackEmpty(S) == 1){
+            Pop(&S, &p);
+            p = p->rchild;
+        }
+    }
+
+    return OK;
+}
+
 //递归中序遍历二叉树
 Status InOrderTraverse(BiTree T){
 
@@ -266,6 +292,32 @@ Status PostOrderTraverse(BiTree T){
         PostOrderTraverse(T->lchild);
         PostOrderTraverse(T->rchild);
         print(T->data);
+    }
+    return OK;
+}
+
+//非递归后序遍历二叉树
+Status NoRePostOrderTraverse(BiTree T){
+
+    sqStack S;
+    InitStack(&S);
+    BiTree cur, pre = NULL;
+    Push(&S, T);
+    while(StackEmpty(S) == 1){
+        GetTop(&S, &cur);
+        if((cur->lchild == NULL && cur->rchild ==NULL)||(pre != NULL && (pre == cur->lchild || pre == cur->rchild))){
+            print(cur->data);
+            Pop(&S, &pre);
+            //pre = cur;
+        }
+        else{
+            if(cur->rchild != NULL){
+                Push(&S, cur->rchild);
+            }
+            if(cur->lchild != NULL){
+                Push(&S, cur->lchild);
+            }
+        }
     }
     return OK;
 }
@@ -369,6 +421,9 @@ int main()
     printf("递归的先序遍历结果为：\n");
     PreOrderTraverse(T, level);
     printf("\n");
+    printf("非递归的先序遍历结果是：\n");
+    NoRePreOrderTraverse(T);
+    printf("\n");
     printf("递归中序遍历二叉树结果：\n");
     InOrderTraverse(T);
     printf("\n");
@@ -378,10 +433,13 @@ int main()
     printf("第二种非递归的中序遍历结果为：\n");
     SecondInOrderTraverse(T);
     printf("\n");
-    printf("递归后续遍历二叉树的结果：\n");
+    printf("递归后序遍历二叉树的结果：\n");
     PostOrderTraverse(T);
     printf("\n");
-    printf("非递归层次遍历二叉数的结果：\n");
+    printf("非递归后序遍历二叉树的结果：\n");
+    NoRePostOrderTraverse(T);
+    printf("\n");
+    printf("非递归层次遍历二叉树的结果：\n");
     LevelOrderTraverse(T);
     printf("\n");
     printf("非递归求二叉树的深度是：%d\n", TreeDeep(T));
